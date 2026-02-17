@@ -1,0 +1,135 @@
+.featured-section {
+  background: var(--color-bg-white);
+}
+
+.section-subtitle {
+  text-align: center;
+  color: var(--color-text-medium);
+  font-size: 1.125rem;
+  margin-bottom: 48px;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.featured-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 32px;
+}
+
+.featured-card {
+  background: white;
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border);
+  transition: var(--transition);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.featured-card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-8px);
+  border-color: var(--color-primary);
+}
+
+.featured-badge {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+  color: white;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.domain-name {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-bottom: 12px;
+  word-break: break-word;
+}
+
+.domain-category {
+  display: inline-block;
+  background: var(--color-bg-light);
+  color: var(--color-text-medium);
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 16px;
+}
+
+.domain-description {
+  color: var(--color-text-medium);
+  line-height: 1.6;
+  margin-bottom: 20px;
+  flex-grow: 1;
+}
+
+.domain-meta {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border);
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.875rem;
+  color: var(--color-text-light);
+}
+
+.meta-item svg {
+  opacity: 0.6;
+}
+
+.domain-price {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-text-dark);
+  margin-bottom: 20px;
+}
+
+.btn-inquiry {
+  width: 100%;
+  font-weight: 600;
+}
+
+.loading {
+  text-align: center;
+  padding: 48px;
+  color: var(--color-text-medium);
+  font-size: 1.125rem;
+}
+
+@media (max-width: 768px) {
+  .featured-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .featured-card {
+    padding: 24px;
+  }
+
+  .domain-name {
+    font-size: 1.25rem;
+  }
+
+  .domain-price {
+    font-size: 1.75rem;
+  }
+}

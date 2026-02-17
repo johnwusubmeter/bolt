@@ -1,0 +1,115 @@
+.contact-section {
+  background: var(--color-bg-light);
+}
+
+.contact-content {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.contact-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 32px;
+  margin-bottom: 48px;
+}
+
+.contact-card {
+  background: white;
+  padding: 40px;
+  border-radius: 16px;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border);
+  transition: var(--transition);
+}
+
+.contact-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-4px);
+  border-color: var(--color-primary);
+}
+
+.contact-icon {
+  width: 64px;
+  height: 64px;
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+  color: white;
+}
+
+.contact-card h3 {
+  font-size: 1.5rem;
+  margin-bottom: 16px;
+  color: var(--color-text-dark);
+}
+
+.contact-link {
+  display: block;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  margin-bottom: 12px;
+  word-break: break-word;
+}
+
+.contact-link:hover {
+  color: var(--color-secondary);
+}
+
+.contact-note {
+  color: var(--color-text-light);
+  font-size: 0.9rem;
+}
+
+.contact-cta {
+  background: white;
+  padding: 48px;
+  border-radius: 16px;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border);
+}
+
+.contact-cta h3 {
+  font-size: 2rem;
+  margin-bottom: 16px;
+  color: var(--color-text-dark);
+}
+
+.contact-cta p {
+  font-size: 1.125rem;
+  line-height: 1.8;
+  color: var(--color-text-medium);
+  margin-bottom: 32px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (max-width: 768px) {
+  .contact-cards {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .contact-card {
+    padding: 32px 24px;
+  }
+
+  .contact-cta {
+    padding: 32px 24px;
+  }
+
+  .contact-cta h3 {
+    font-size: 1.5rem;
+  }
+
+  .contact-cta p {
+    font-size: 1rem;
+  }
+}
