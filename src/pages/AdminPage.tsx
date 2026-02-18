@@ -398,41 +398,284 @@ export default function AdminPage() {
 function LoginForm({ onLogin }: { onLogin: (email: string, password: string) => void }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [mode, setMode] = useState<'login' | 'register' | 'forgot'>('login');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleLoginSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
     onLogin(email, password);
+  };
+
+  const handleRegisterSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setMessage('');
+
+    if (!email || !password || !confirmPassword) {
+      setError('All fields are required');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email,
+        password,
+      });
+
+      if (authError) throw authError;
+
+      if (!authData.user) {
+        throw new Error('Failed to create account');
+      }
+
+      const { error: adminError } = await supabase
+        .from('admin_users')
+        .insert([{
+          id: authData.user.id,
+          email,
+        }]);
+
+      if (adminError) throw adminError;
+
+      setMessage('Account created successfully! You can now log in.');
+      setTimeout(() => {
+        setMode('login');
+        setEmail('');
+        setPassword('');
+        setConfirmPassword('');
+        setMessage('');
+      }, 2000);
+    } catch (err: any) {
+      setError(err.message || 'Failed to create account');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setMessage('');
+
+    if (!email) {
+      setError('Email is required');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/admin`,
+      });
+
+      if (error) throw error;
+
+      setMessage('Password reset link sent to your email. Check your inbox.');
+      setTimeout(() => {
+        setMode('login');
+        setEmail('');
+        setMessage('');
+      }, 3000);
+    } catch (err: any) {
+      setError(err.message || 'Failed to send reset email');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleClose = () => {
+    window.location.href = '/';
   };
 
   return (
     <div className="login-page">
+      <button className="close-btn" onClick={handleClose}>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
+
       <div className="login-container">
-        <h1>Admin Login</h1>
-        <form onSubmit={handleSubmit} className="login-form">
-          <div className="form-group">
-            <label>Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              placeholder="admin@example.com"
-            />
-          </div>
-          <div className="form-group">
-            <label>Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              placeholder="Enter password"
-            />
-          </div>
-          <button type="submit" className="btn btn-primary">
-            Login
-          </button>
-        </form>
+        {mode === 'login' && (
+          <>
+            <h1>Admin Login</h1>
+            {error && <div className="error-message">{error}</div>}
+            {message && <div className="success-message">{message}</div>}
+
+            <form onSubmit={handleLoginSubmit} className="login-form">
+              <div className="form-group">
+                <label>Email</label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  placeholder="admin@example.com"
+                />
+              </div>
+              <div className="form-group">
+                <label>Password</label>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  placeholder="Enter password"
+                />
+              </div>
+              <button type="submit" className="btn btn-primary">
+                Login
+              </button>
+            </form>
+
+            <div className="form-links">
+              <button
+                type="button"
+                className="link-btn"
+                onClick={() => {
+                  setMode('register');
+                  setError('');
+                  setMessage('');
+                }}
+              >
+                Create Account
+              </button>
+              <span className="link-separator">•</span>
+              <button
+                type="button"
+                className="link-btn"
+                onClick={() => {
+                  setMode('forgot');
+                  setError('');
+                  setMessage('');
+                }}
+              >
+                Forgot Password?
+              </button>
+            </div>
+          </>
+        )}
+
+        {mode === 'register' && (
+          <>
+            <h1>Create Admin Account</h1>
+            {error && <div className="error-message">{error}</div>}
+            {message && <div className="success-message">{message}</div>}
+
+            <form onSubmit={handleRegisterSubmit} className="login-form">
+              <div className="form-group">
+                <label>Email</label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  placeholder="admin@example.com"
+                />
+              </div>
+              <div className="form-group">
+                <label>Password</label>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  placeholder="Enter password (min 6 characters)"
+                />
+              </div>
+              <div className="form-group">
+                <label>Confirm Password</label>
+                <input
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                  placeholder="Confirm password"
+                />
+              </div>
+              <button type="submit" className="btn btn-primary" disabled={loading}>
+                {loading ? 'Creating...' : 'Create Account'}
+              </button>
+            </form>
+
+            <div className="form-links">
+              <button
+                type="button"
+                className="link-btn"
+                onClick={() => {
+                  setMode('login');
+                  setError('');
+                  setMessage('');
+                  setEmail('');
+                  setPassword('');
+                  setConfirmPassword('');
+                }}
+              >
+                Back to Login
+              </button>
+            </div>
+          </>
+        )}
+
+        {mode === 'forgot' && (
+          <>
+            <h1>Reset Password</h1>
+            {error && <div className="error-message">{error}</div>}
+            {message && <div className="success-message">{message}</div>}
+
+            <form onSubmit={handleForgotPassword} className="login-form">
+              <p className="form-description">
+                Enter your email address and we'll send you a link to reset your password.
+              </p>
+              <div className="form-group">
+                <label>Email</label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  placeholder="admin@example.com"
+                />
+              </div>
+              <button type="submit" className="btn btn-primary" disabled={loading}>
+                {loading ? 'Sending...' : 'Send Reset Link'}
+              </button>
+            </form>
+
+            <div className="form-links">
+              <button
+                type="button"
+                className="link-btn"
+                onClick={() => {
+                  setMode('login');
+                  setError('');
+                  setMessage('');
+                  setEmail('');
+                }}
+              >
+                Back to Login
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
